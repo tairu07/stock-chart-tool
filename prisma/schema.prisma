@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Symbol {
+  code      String  @id           // 証券コード（例: "7203"）
+  name      String                // 銘柄名
+  market    String                // PRIME/STANDARD/GROWTH
+  sector    String?               // 業種
+  unit      Int?                  // 売買単位
+  listedOn  DateTime?             // 上場日
+  prices    Price[]               // 価格データとのリレーション
+  marks     Mark[]                // マークとのリレーション
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("symbols")
+}
+
+model Price {
+  code      String
+  date      DateTime
+  open      Float
+  high      Float
+  low       Float
+  close     Float
+  volume    Int
+  adjClose  Float  // 調整後終値
+  sourceVer String?                      // 取得元の世代ID
+  symbol    Symbol   @relation(fields: [code], references: [code], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([code, date])
+  @@index([date])
+  @@index([code, date])
+  @@map("prices")
+}
+
+model Snapshot {
+  code      String
+  period    String   // "1m"|"3m"|"1y"|"3y"|"5y"
+  datasetId String   // 世代ID
+  updatedAt DateTime
+  url       String   // CDN上のJSONパス
+  createdAt DateTime @default(now())
+
+  @@id([code, period])
+  @@index([datasetId])
+  @@map("snapshots")
+}
+
+model Mark {
+  id        String   @id @default(cuid())
+  code      String
+  kind      String   // "star"|"skip"|"tag"|"note"|"history"
+  payload   String?  // タグ名やノート内容
+  symbol    Symbol   @relation(fields: [code], references: [code], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([code, kind])
+  @@index([kind])
+  @@map("marks")
+}
+
+model DatasetVersion {
+  id          String   @id @default(cuid())
+  version     String   @unique  // データセットのバージョン識別子
+  description String?             // バージョンの説明
+  isActive    Boolean  @default(false)  // アクティブなバージョンかどうか
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("dataset_versions")
+}

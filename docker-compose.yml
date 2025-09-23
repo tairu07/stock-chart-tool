@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # メインアプリケーション
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:password@db:5432/stockchart
+      - JQUANTS_MAIL_ADDRESS=${JQUANTS_MAIL_ADDRESS}
+      - JQUANTS_PASSWORD=${JQUANTS_PASSWORD}
+      - REVALIDATE_SECRET=${REVALIDATE_SECRET}
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+    depends_on:
+      - db
+    restart: unless-stopped
+    volumes:
+      - ./uploads:/app/uploads
+
+  # スケジューラー（バッチ処理）
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile.scheduler
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:password@db:5432/stockchart
+      - JQUANTS_MAIL_ADDRESS=${JQUANTS_MAIL_ADDRESS}
+      - JQUANTS_PASSWORD=${JQUANTS_PASSWORD}
+      - REVALIDATE_SECRET=${REVALIDATE_SECRET}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  # PostgreSQLデータベース
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=stockchart
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+
+  # Redis（キャッシュ用）
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

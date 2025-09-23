@@ -1,0 +1,45 @@
+{
+  "name": "stock-chart-tool",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start",
+    "lint": "eslint",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "ingest:eod": "tsx scripts/ingest-eod.ts",
+    "ingest:intraday": "tsx scripts/ingest-intraday.ts",
+    "update:symbols": "tsx scripts/update-symbols.ts",
+    "maintenance": "tsx scripts/maintenance.ts",
+    "scheduler": "tsx scripts/scheduler.ts",
+    "seed:sample": "tsx scripts/seed-sample-data.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.16.2",
+    "@types/cron": "^2.0.1",
+    "cron": "^4.3.3",
+    "decimal.js": "^10.6.0",
+    "lucide-react": "^0.544.0",
+    "next": "15.5.3",
+    "prisma": "^6.16.2",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "recharts": "^3.2.1"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20.19.17",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.3",
+    "tailwindcss": "^4",
+    "tsx": "^4.20.5",
+    "typescript": "^5"
+  }
+}
