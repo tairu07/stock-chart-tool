@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { revalidateTag } from 'next/cache';
 
+export const dynamic = 'force-dynamic';
+
 // Webhook署名を検証する関数
 function verifyWebhookSignature(payload: string, signature: string, secret: string): boolean {
   if (!signature || !secret) return false;
