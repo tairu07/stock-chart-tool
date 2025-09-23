@@ -47,6 +47,17 @@ export function useStockData(
     setError(null);
 
     try {
+      // 静的エクスポート環境では直接モックデータを使用
+      if (typeof window !== 'undefined' && !window.location.origin.includes('localhost')) {
+        const { getStaticStockData } = await import('@/lib/static-data');
+        const stockData = await getStaticStockData(stockCode, { 
+          period: stockPeriod, 
+          adjusted: true 
+        });
+        setData(stockData);
+        return;
+      }
+
       const params = new URLSearchParams({
         period: stockPeriod,
         adjusted: 'true',

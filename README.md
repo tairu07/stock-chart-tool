@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 日本株チャート巡回ツール v2.0
+
+Next.js App Routerを使用した日本株のチャート表示・巡回ツールです。
 
 ## Getting Started
 
