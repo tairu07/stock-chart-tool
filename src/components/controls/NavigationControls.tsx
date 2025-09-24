@@ -54,11 +54,11 @@ export function NavigationControls({
       </div>
 
       {/* 再生コントロール */}
-      <div className="flex items-center justify-center space-x-2">
+      <div className="flex items-center justify-center space-x-4">
         <button
           onClick={onPrevious}
           disabled={totalCount === 0}
-          className="p-2 rounded-md bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
           title="前の銘柄 (←)"
         >
           <SkipBack className="w-5 h-5" />
@@ -67,20 +67,20 @@ export function NavigationControls({
         <button
           onClick={onTogglePlayback}
           disabled={totalCount === 0}
-          className={`p-3 rounded-md transition-colors ${
+          className={`flex items-center justify-center w-16 h-16 rounded-full transition-all shadow-lg ${
             isPlaying
-              ? 'bg-red-100 hover:bg-red-200 text-red-700'
-              : 'bg-green-100 hover:bg-green-200 text-green-700'
+              ? 'bg-red-500 hover:bg-red-600 text-white scale-105'
+              : 'bg-green-500 hover:bg-green-600 text-white'
           } disabled:opacity-50 disabled:cursor-not-allowed`}
-          title="再生/停止 (Space)"
+          title={isPlaying ? "停止 (Space)" : "全銘柄巡回開始 (Space)"}
         >
-          {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
+          {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8 ml-1" />}
         </button>
 
         <button
           onClick={onNext}
           disabled={totalCount === 0}
-          className="p-2 rounded-md bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
           title="次の銘柄 (→)"
         >
           <SkipForward className="w-5 h-5" />
