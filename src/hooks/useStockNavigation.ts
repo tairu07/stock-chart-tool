@@ -29,23 +29,34 @@ export function useStockNavigation({ market, searchQuery }: UseStockNavigationPr
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 銘柄リストを取得
+  // 銘柄リストを取得（全銘柄対応）
   const fetchStockList = useCallback(async () => {
     try {
+      console.log('Fetching stock list for navigation...');
+      
+      // 全銘柄を取得するため、大きなlimitを設定
       const params = new URLSearchParams({
-        market,
-        size: '1000', // 最大1000件
+        limit: '5000', // J-Quants APIの全銘柄をカバー
+        page: '1',
       });
 
+      if (market && market !== 'all') {
+        params.append('market', market);
+      }
+
       if (searchQuery) {
-        params.append('q', searchQuery);
+        params.append('search', searchQuery);
       }
 
       const response = await fetch(`/api/list?${params}`);
-      if (!response.ok) throw new Error('Failed to fetch stock list');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch stock list: ${response.status}`);
+      }
 
       const data = await response.json();
-      const codes = data.data.map((stock: any) => stock.code);
+      console.log(`Fetched ${data.stocks?.length || 0} stocks for navigation`);
+      
+      const codes = (data.stocks || []).map((stock: any) => stock.code);
 
       setState(prev => ({
         ...prev,
@@ -173,10 +184,16 @@ export function useStockNavigation({ market, searchQuery }: UseStockNavigationPr
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [togglePlayback, goToPrevious, goToNext, setSpeed]);
 
-  // 初期データ取得
+   // 初期化（全銘柄対応）
   useEffect(() => {
+    console.log('Initializing stock navigation...');
     fetchStockList();
   }, [fetchStockList]);
+
+  // デバッグ情報
+  useEffect(() => {
+    console.log(`Navigation state: ${state.currentIndex + 1}/${state.totalCount} stocks, current: ${state.currentCode}`);
+  }, [state.currentIndex, state.totalCount, state.currentCode]);
 
   return {
     currentIndex: state.currentIndex,
