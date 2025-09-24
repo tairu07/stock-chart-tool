@@ -34,7 +34,7 @@ export function useStockData(
 
   const fetchStockData = useCallback(async (stockCode: string, stockPeriod: Period) => {
     // まずキャッシュをチェック
-    if (prefetchOptions) {
+    if (prefetchOptions && getCachedData) {
       const cachedData = getCachedData(stockCode, stockPeriod);
       if (cachedData) {
         setData(cachedData);
@@ -65,7 +65,7 @@ export function useStockData(
       const stockData = await response.json();
       console.log(`Successfully fetched data for ${stockCode}:`, stockData);
       
-      if (!stockData || !stockData.prices || stockData.prices.length === 0) {
+      if (!stockData || !stockData.data || stockData.data.length === 0) {
         // データが空の場合もモックデータを使用
         const mockData = generateMockStockData(stockCode, stockPeriod);
         setData(mockData);
@@ -73,6 +73,10 @@ export function useStockData(
         setIsLoading(false);
         return;
       }
+
+      // APIレスポンスを正常に設定
+      setData(stockData);
+      setError(null);
 
     } catch (err) {
       console.error('Error fetching stock data:', err);
@@ -83,7 +87,7 @@ export function useStockData(
     } finally {
       setIsLoading(false);
     }
-  }, [getCachedData, prefetchOptions]);
+  }, []);
 
   // コードまたは期間が変更されたときにデータを取得
   useEffect(() => {
@@ -94,7 +98,7 @@ export function useStockData(
       setError(null);
       setIsLoading(false);
     }
-  }, [code, period, fetchStockData]);
+  }, [code, period]);
 
   return {
     data,
