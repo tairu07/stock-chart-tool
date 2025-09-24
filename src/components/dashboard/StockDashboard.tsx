@@ -115,7 +115,7 @@ export function StockDashboard() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-8rem)]">
       {/* 左サイドバー: コントロールパネル */}
-      <div className="lg:col-span-1 space-y-4">
+      <div className="lg:col-span-1 space-y-4 overflow-y-auto">
         <ControlPanel
           chartConfig={chartConfig}
           onChartConfigChange={setChartConfig}
